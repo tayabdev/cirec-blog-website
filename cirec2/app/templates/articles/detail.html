@@ -217,16 +217,62 @@
         font-weight: 700;
     }
 
-    .related-card .card-title a:hover {
-        color: #667eea;
+    .pdf-viewer-section {
+        margin-top: 3rem;
     }
 
-    .alert-info {
-        background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
-        border: none;
+    .pdf-viewer-container {
+        position: relative;
+        width: 100%;
+        background: #f8f9fa;
         border-radius: 15px;
-        padding: 1.5rem;
-        margin: 2rem 0;
+        overflow: hidden;
+        box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .pdf-viewer-container iframe {
+        width: 100%;
+        height: 70vh;
+        min-height: 600px;
+        border: none;
+    }
+
+    .content-toggle-section {
+        margin-top: 3rem;
+        padding: 2rem;
+        background: #f8f9fa;
+        border-radius: 15px;
+        text-align: center;
+    }
+
+    .content-toggle-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        padding: 1rem 2.5rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .content-toggle-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .extracted-content {
+        margin-top: 2rem;
+        padding: 2rem;
+        background: white;
+        border-radius: 15px;
+        border: 2px solid #e9ecef;
+    }
+
+    @media (max-width: 768px) {
+        .pdf-viewer-container iframe {
+            height: 50vh;
+            min-height: 400px;
+        }
     }
 
     @media (max-width: 768px) {
@@ -295,18 +341,48 @@
             <!-- Article Content -->
             <div class="article-content-card">
                 {% if can_access_full %}
-                <!-- Full Content for Subscribers -->
-                <div class="article-content">
-                    {% if article.full_text_content %}
-                    {{ article.full_text_content|safe }}
-                    {% else %}
-                    <p>{{ article.preview_content }}</p>
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle me-2"></i>
-                        <strong>PDF Content:</strong> This article's full content is stored in the PDF file.
+                <!-- PDF Viewer First -->
+                <div class="pdf-viewer-section">
+                    <h3 class="mb-4">
+                        <i class="fas fa-file-pdf me-2"></i>PDF Document
+                    </h3>
+                    <div class="pdf-viewer-container">
+                        <iframe src="{{ url_for('articles.view_pdf', article_uuid=article.uuid) }}"
+                            title="{{ article.title }} - PDF">
+                        </iframe>
                     </div>
-                    {% endif %}
+                    <div class="d-flex justify-content-center gap-3 mt-3">
+                        <a href="{{ url_for('articles.download_pdf', article_uuid=article.uuid) }}"
+                            class="btn btn-success">
+                            <i class="fas fa-download me-2"></i>Download PDF
+                        </a>
+                        <button class="btn btn-outline-primary" onclick="window.print()">
+                            <i class="fas fa-print me-2"></i>Print
+                        </button>
+                    </div>
                 </div>
+
+                <!-- Extracted Text Content (Toggle) -->
+                {% if article.full_text_content %}
+                <div class="content-toggle-section">
+                    <p class="text-muted mb-3">Want to read the extracted text version?</p>
+                    <button class="btn content-toggle-btn" onclick="toggleExtractedContent()">
+                        <i class="fas fa-align-left me-2"></i>View Extracted Text
+                    </button>
+                </div>
+
+                <div id="extractedContent" class="extracted-content" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3><i class="fas fa-file-alt me-2"></i>Extracted Text Content</h3>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="toggleExtractedContent()">
+                            <i class="fas fa-times me-1"></i>Hide
+                        </button>
+                    </div>
+                    <div class="article-content">
+                        {{ article.full_text_content|safe }}
+                    </div>
+                </div>
+                {% endif %}
 
                 {% else %}
                 <!-- Preview for Non-Subscribers -->
