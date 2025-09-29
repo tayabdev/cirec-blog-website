@@ -1,36 +1,284 @@
-<!-- cirec2/app/templates/articles/detail.html -->
-
 {% extends "base.html" %}
 
 {% block title %}{{ article.title }} - CIREC{% endblock %}
 
-{% block content %}
-<div class="container mt-4">
-    <!-- Article Header -->
-    <div class="article-header">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 mx-auto text-center">
-                    {% if article.is_featured %}
-                    <span class="badge bg-warning text-dark mb-2">Featured Article</span>
-                    {% endif %}
-                    <h1 class="display-5">{{ article.title }}</h1>
-                    <p class="lead text-muted">{{ article.description }}</p>
+{% block extra_css %}
+<style>
+    .article-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 4rem 0 3rem 0;
+        margin-top: 20px;
+        margin-bottom: 3rem;
+        position: relative;
+        overflow: hidden;
+    }
 
-                    <div class="d-flex justify-content-center align-items-center gap-4 mt-4">
-                        <div class="text-center">
+    .article-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.2;
+    }
+
+    .article-hero-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .article-hero h1 {
+        color: white;
+        font-weight: 800;
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.3;
+    }
+
+    .article-hero .lead {
+        color: rgba(255, 255, 255, 0.95);
+        font-size: 1.2rem;
+        line-height: 1.7;
+    }
+
+    .article-meta-box {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-top: 2rem;
+    }
+
+    .meta-item {
+        text-align: center;
+    }
+
+    .meta-item strong {
+        display: block;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 0.25rem;
+    }
+
+    .meta-item .text-muted {
+        font-size: 0.9rem;
+        color: #7f8c8d;
+    }
+
+    .article-content-card {
+        background: white;
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 5px 30px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+    }
+
+    .article-content {
+        font-size: 1.1rem;
+        line-height: 1.9;
+        color: #2c3e50;
+    }
+
+    .article-content p {
+        margin-bottom: 1.5rem;
+    }
+
+    .article-content h2,
+    .article-content h3 {
+        margin-top: 2.5rem;
+        margin-bottom: 1.25rem;
+        color: #2c3e50;
+        font-weight: 700;
+    }
+
+    .paywall-overlay {
+        background: linear-gradient(transparent 0%, rgba(255, 255, 255, 0.7) 50%, rgba(255, 255, 255, 1) 100%);
+        position: relative;
+        margin-top: -5rem;
+        padding-top: 5rem;
+        text-align: center;
+    }
+
+    .paywall-message {
+        background: white;
+        border: 3px solid #667eea;
+        border-radius: 20px;
+        padding: 3rem;
+        max-width: 600px;
+        margin: 0 auto;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .paywall-message h4 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+
+    .paywall-message i {
+        font-size: 3rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1rem;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .action-buttons .btn {
+        flex: 1;
+        min-width: 150px;
+        padding: 1rem 2rem;
+        font-size: 1.05rem;
+        font-weight: 600;
+        border-radius: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .action-buttons .btn-success {
+        background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        border: none;
+    }
+
+    .action-buttons .btn-success:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(39, 174, 96, 0.3);
+    }
+
+    .action-buttons .btn-outline-primary:hover {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: transparent;
+        color: white;
+    }
+
+    .tags-section {
+        padding: 1.5rem 0;
+        border-top: 2px solid #f8f9fa;
+        margin-top: 2rem;
+    }
+
+    .tag {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        color: #2c3e50;
+        padding: 0.5rem 1.2rem;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+        margin: 0.3rem;
+        font-weight: 500;
+    }
+
+    .tag:hover {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .related-articles {
+        margin-top: 4rem;
+    }
+
+    .related-articles h3 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 2rem;
+    }
+
+    .related-card {
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        height: 100%;
+    }
+
+    .related-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .related-card .card-title a {
+        color: #2c3e50;
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+    .related-card .card-title a:hover {
+        color: #667eea;
+    }
+
+    .alert-info {
+        background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+        border: none;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin: 2rem 0;
+    }
+
+    @media (max-width: 768px) {
+        .article-hero h1 {
+            font-size: 1.8rem;
+        }
+
+        .article-content-card {
+            padding: 1.5rem;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .action-buttons .btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Article Hero -->
+<div class="article-hero">
+    <div class="container article-hero-content">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                {% if article.is_featured %}
+                <span class="badge bg-warning text-dark mb-3"
+                    style="font-size: 0.9rem; padding: 0.5rem 1rem; border-radius: 20px;">
+                    <i class="fas fa-star me-1"></i>Featured Article
+                </span>
+                {% endif %}
+                <h1>{{ article.title }}</h1>
+                <p class="lead">{{ article.description }}</p>
+
+                <div class="article-meta-box">
+                    <div class="row">
+                        <div class="col-md-3 col-6 meta-item">
                             <strong>{{ article.author }}</strong>
                             <div class="text-muted">Author</div>
                         </div>
-                        <div class="text-center">
+                        <div class="col-md-3 col-6 meta-item">
                             <strong>{{ article.category }}</strong>
                             <div class="text-muted">Category</div>
                         </div>
-                        <div class="text-center">
+                        <div class="col-md-3 col-6 meta-item">
                             <strong>{{ article.view_count or 0 }}</strong>
                             <div class="text-muted">Views</div>
                         </div>
-                        <div class="text-center">
+                        <div class="col-md-3 col-6 meta-item">
                             <strong>{{ article.created_at.strftime('%B %Y') }}</strong>
                             <div class="text-muted">Published</div>
                         </div>
@@ -39,104 +287,101 @@
             </div>
         </div>
     </div>
+</div>
 
+<div class="container">
     <div class="row">
-        <div class="col-lg-8 mx-auto">
+        <div class="col-lg-10 mx-auto">
             <!-- Article Content -->
-            <div class="card">
-                <div class="card-body">
-                    {% if can_access_full %}
-                    <!-- Full Content for Subscribers -->
-                    <div class="article-content">
-                        {% if article.full_text_content %}
-                        {{ article.full_text_content|safe }}
-                        {% else %}
-                        <p>{{ article.preview_content }}</p>
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle"></i>
-                            This article's full content is stored in the PDF file.
-                            <a href="{{ url_for('articles.download_pdf', article_uuid=article.uuid) }}"
-                                class="btn btn-primary btn-sm ms-2">
-                                <i class="fas fa-download"></i> Download PDF
-                            </a>
-                        </div>
-                        {% endif %}
-                    </div>
-
+            <div class="article-content-card">
+                {% if can_access_full %}
+                <!-- Full Content for Subscribers -->
+                <div class="article-content">
+                    {% if article.full_text_content %}
+                    {{ article.full_text_content|safe }}
                     {% else %}
-                    <!-- Preview for Non-Subscribers -->
-                    <div class="article-content">
-                        {{ article.preview_content|safe }}
+                    <p>{{ article.preview_content }}</p>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>PDF Content:</strong> This article's full content is stored in the PDF file.
                     </div>
+                    {% endif %}
+                </div>
 
-                    <div class="paywall-overlay">
-                        <div class="paywall-message">
-                            <h4><i class="fas fa-lock"></i> Continue Reading</h4>
-                            <p>Sign up for free to read the full article and download the PDF.</p>
-                            <div class="d-flex gap-2 justify-content-center">
-                                {% if not current_user.is_authenticated %}
-                                <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Sign Up Free</a>
-                                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary">Login</a>
-                                {% else %}
-                                <p class="text-muted">Your account doesn't have access to full articles.</p>
-                                {% endif %}
-                            </div>
+                {% else %}
+                <!-- Preview for Non-Subscribers -->
+                <div class="article-content">
+                    {{ article.preview_content|safe }}
+                </div>
+
+                <div class="paywall-overlay">
+                    <div class="paywall-message">
+                        <i class="fas fa-lock"></i>
+                        <h4>Continue Reading</h4>
+                        <p class="mb-4">Sign up for free to read the full article and download the PDF.</p>
+                        <div class="action-buttons justify-content-center">
+                            {% if not current_user.is_authenticated %}
+                            <a href="{{ url_for('auth.register') }}" class="btn btn-success">
+                                <i class="fas fa-user-plus me-2"></i>Sign Up Free
+                            </a>
+                            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login
+                            </a>
+                            {% else %}
+                            <p class="text-muted">Your account doesn't have access to full articles.</p>
+                            {% endif %}
                         </div>
                     </div>
+                </div>
+                {% endif %}
+
+                <!-- Article Tags -->
+                {% if article.tags %}
+                <div class="tags-section">
+                    <strong style="color: #2c3e50; font-size: 1.1rem;"><i class="fas fa-tags me-2"></i>Tags: </strong>
+                    {% for tag in article.tag_list %}
+                    <a href="{{ url_for('search.search', q=tag) }}" class="tag">{{ tag }}</a>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Action Buttons -->
+                <div class="action-buttons mt-4">
+                    {% if current_user.is_authenticated and (current_user.is_subscribed() or current_user.is_admin) %}
+                    <a href="{{ url_for('articles.download_pdf', article_uuid=article.uuid) }}" class="btn btn-success">
+                        <i class="fas fa-download me-2"></i>Download PDF
+                    </a>
                     {% endif %}
 
-                    <!-- Article Tags -->
-                    {% if article.tags %}
-                    <hr class="my-4">
-                    <div class="mb-3">
-                        <strong>Tags: </strong>
-                        {% for tag in article.tag_list %}
-                        <a href="{{ url_for('search.search', q=tag) }}" class="tag">{{ tag }}</a>
-                        {% endfor %}
-                    </div>
+                    <button class="btn btn-outline-primary" onclick="shareArticle()">
+                        <i class="fas fa-share-alt me-2"></i>Share Article
+                    </button>
+
+                    {% if current_user.is_authenticated and current_user.is_admin %}
+                    <a href="{{ url_for('admin.edit_article', article_id=article.id) }}"
+                        class="btn btn-outline-warning">
+                        <i class="fas fa-edit me-2"></i>Edit
+                    </a>
                     {% endif %}
-
-                    <!-- Action Buttons -->
-                    <div class="d-flex gap-2 mt-4">
-                        {% if current_user.is_authenticated and (current_user.is_subscribed() or current_user.is_admin)
-                        %}
-                        <a href="{{ url_for('articles.download_pdf', article_uuid=article.uuid) }}"
-                            class="btn btn-success">
-                            <i class="fas fa-download"></i> Download PDF
-                        </a>
-                        {% endif %}
-
-                        <button class="btn btn-outline-primary" onclick="shareArticle()">
-                            <i class="fas fa-share"></i> Share
-                        </button>
-
-                        {% if current_user.is_authenticated and current_user.is_admin %}
-                        <a href="{{ url_for('admin.edit_article', article_id=article.id) }}"
-                            class="btn btn-outline-warning">
-                            <i class="fas fa-edit"></i> Edit
-                        </a>
-                        {% endif %}
-                    </div>
                 </div>
             </div>
 
             <!-- Related Articles -->
             {% if related_articles %}
-            <div class="mt-5">
-                <h3>Related Articles</h3>
-                <div class="row">
+            <div class="related-articles">
+                <h3><i class="fas fa-book-reader me-3"></i>Related Articles</h3>
+                <div class="row g-4">
                     {% for related in related_articles %}
-                    <div class="col-md-6 mb-3">
-                        <div class="card">
+                    <div class="col-md-6">
+                        <div class="card related-card">
                             <div class="card-body">
                                 <h6 class="card-title">
-                                    <a href="{{ url_for('articles.view_article', article_uuid=related.uuid) }}"
-                                        class="text-decoration-none">
+                                    <a href="{{ url_for('articles.view_article', article_uuid=related.uuid) }}">
                                         {{ related.title }}
                                     </a>
                                 </h6>
-                                <p class="card-text small text-muted">{{ related.description[:100] }}...</p>
-                                <small class="text-muted">By {{ related.author }}</small>
+                                <p class="card-text small text-muted">{{ related.description[:120] }}...</p>
+                                <small class="text-muted"><i class="fas fa-user me-1"></i>{{ related.author }}</small>
                             </div>
                         </div>
                     </div>
@@ -147,33 +392,4 @@
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-    function shareArticle() {
-        if (navigator.share) {
-            navigator.share({
-                title: '{{ article.title }}',
-                text: '{{ article.description }}',
-                url: window.location.href
-            });
-        } else {
-            // Fallback - copy URL to clipboard
-            navigator.clipboard.writeText(window.location.href).then(function () {
-                alert('Article URL copied to clipboard!');
-            });
-        }
-    }
-
-    // Track reading time
-    let startTime = Date.now();
-    window.addEventListener('beforeunload', function () {
-        let readingTime = Math.floor((Date.now() - startTime) / 1000);
-        if (readingTime > 10) {
-            // Track reading analytics here if needed
-            console.log('Reading time:', readingTime, 'seconds');
-        }
-    });
-</script>
 {% endblock %}
