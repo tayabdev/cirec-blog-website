@@ -1,3 +1,5 @@
+// cirec2/static/js/main.js
+
 // Main JavaScript for CIREC Blog
 
 document.addEventListener('DOMContentLoaded', function () {
