@@ -4,36 +4,242 @@
 
 {% block title %}Articles - CIREC{% endblock %}
 
+{% block extra_css %}
+<style>
+    .articles-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 4rem 0 2rem 0;
+        margin-bottom: 3rem;
+        margin-top: 20px;
+    }
+
+    .articles-hero h2 {
+        color: white;
+        font-weight: 700;
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .articles-hero p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.1rem;
+    }
+
+    .filters-bar {
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .filters-bar .form-select {
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        padding: 0.75rem 1rem;
+        font-weight: 500;
+    }
+
+    .article-card {
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        height: 100%;
+        background: white;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .article-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .article-card .card-body {
+        padding: 2rem;
+    }
+
+    .article-card .card-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+        line-height: 1.4;
+    }
+
+    .article-card .card-title a {
+        color: #2c3e50;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .article-card .card-title a:hover {
+        color: #667eea;
+    }
+
+    .article-card .card-text {
+        color: #7f8c8d;
+        line-height: 1.7;
+        margin-bottom: 1.5rem;
+    }
+
+    .article-card .badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .article-card .btn {
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .article-card .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .featured-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        z-index: 10;
+        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+    }
+
+    .article-meta {
+        padding-top: 1rem;
+        border-top: 2px solid #f8f9fa;
+    }
+
+    .sidebar-card {
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+        position: sticky;
+        top: 110px;
+    }
+
+    .sidebar-card .card-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.5rem;
+        border: none;
+        font-weight: 700;
+    }
+
+    .category-badge {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 0.5rem 1.2rem;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+        margin: 0.3rem;
+        font-weight: 500;
+    }
+
+    .category-badge:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        color: white;
+        text-decoration: none;
+    }
+
+    .category-badge.bg-primary {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%) !important;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 5rem 2rem;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .empty-state i {
+        font-size: 6rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .articles-hero h2 {
+            font-size: 2rem;
+        }
+
+        .sidebar-card {
+            position: static;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-lg-9">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>Articles</h2>
+<!-- Articles Hero -->
+<div class="articles-hero">
+    <div class="container text-center text-white">
+        <h2><i class="fas fa-book-open me-3"></i>Browse Articles</h2>
+        <p>Explore our collection of research papers and publications</p>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Filters Bar -->
+    <div class="filters-bar">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h5 class="mb-3 mb-md-0"><i class="fas fa-filter me-2"></i>Filter & Sort</h5>
+            </div>
+            <div class="col-md-6">
                 <div class="d-flex gap-2">
-                    <select class="form-select" style="width: auto;" onchange="location.href=this.value;">
+                    <select class="form-select" onchange="location.href=this.value;">
                         <option value="{{ url_for('articles.list_articles', sort='latest') }}" {% if
-                            current_sort=='latest' %}selected{% endif %}>Latest</option>
+                            current_sort=='latest' %}selected{% endif %}>
+                            Latest First
+                        </option>
                         <option value="{{ url_for('articles.list_articles', sort='popular') }}" {% if
-                            current_sort=='popular' %}selected{% endif %}>Popular</option>
+                            current_sort=='popular' %}selected{% endif %}>
+                            Most Popular
+                        </option>
                         <option value="{{ url_for('articles.list_articles', sort='featured') }}" {% if
-                            current_sort=='featured' %}selected{% endif %}>Featured</option>
+                            current_sort=='featured' %}selected{% endif %}>
+                            Featured Only
+                        </option>
                     </select>
                 </div>
             </div>
+        </div>
+    </div>
 
+    <div class="row">
+        <div class="col-lg-9">
             {% if articles.items %}
-            <div class="row">
+            <div class="row g-4">
                 {% for article in articles.items %}
-                <div class="col-md-6 mb-4">
-                    <div class="card article-card h-100">
+                <div class="col-md-6">
+                    <div class="card article-card">
                         {% if article.is_featured %}
                         <div class="featured-badge">Featured</div>
                         {% endif %}
                         <div class="card-body">
                             <h5 class="card-title">
-                                <a href="{{ url_for('articles.view_article', article_uuid=article.uuid) }}"
-                                    class="text-decoration-none">
+                                <a href="{{ url_for('articles.view_article', article_uuid=article.uuid) }}">
                                     {{ article.title }}
                                 </a>
                             </h5>
@@ -48,26 +254,31 @@
                             {% endif %}
 
                             <div class="article-meta">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <small class="text-muted">By {{ article.author }}</small>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <small class="text-muted"><i class="fas fa-user me-1"></i>{{ article.author
+                                        }}</small>
                                     <span class="badge bg-primary">{{ article.category }}</span>
                                 </div>
-                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                <div class="d-flex justify-content-between align-items-center">
                                     <small class="text-muted">{{ article.created_at.strftime('%B %d, %Y') }}</small>
-                                    <small class="text-muted">{{ article.view_count or 0 }} views</small>
+                                    <small class="text-muted"><i class="fas fa-eye me-1"></i>{{ article.view_count or 0
+                                        }} views</small>
                                 </div>
                             </div>
-                        </div>
-                        <div class="card-footer bg-transparent">
-                            <a href="{{ url_for('articles.view_article', article_uuid=article.uuid) }}"
-                                class="btn btn-primary btn-sm">Read Article</a>
-                            {% if current_user.is_authenticated and (current_user.is_subscribed() or
-                            current_user.is_admin) %}
-                            <a href="{{ url_for('articles.download_pdf', article_uuid=article.uuid) }}"
-                                class="btn btn-outline-secondary btn-sm">
-                                <i class="fas fa-download"></i> PDF
-                            </a>
-                            {% endif %}
+
+                            <div class="d-flex gap-2 mt-3">
+                                <a href="{{ url_for('articles.view_article', article_uuid=article.uuid) }}"
+                                    class="btn btn-primary flex-grow-1">
+                                    <i class="fas fa-arrow-right me-2"></i>Read Article
+                                </a>
+                                {% if current_user.is_authenticated and (current_user.is_subscribed() or
+                                current_user.is_admin) %}
+                                <a href="{{ url_for('articles.download_pdf', article_uuid=article.uuid) }}"
+                                    class="btn btn-outline-secondary" title="Download PDF">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -76,35 +287,34 @@
 
             <!-- Pagination -->
             {% if articles.pages > 1 %}
-            <nav class="mt-4">
+            <nav class="mt-5">
                 <ul class="pagination justify-content-center">
                     {% if articles.has_prev %}
                     <li class="page-item">
                         <a class="page-link"
-                            href="{{ url_for('articles.list_articles', page=articles.prev_num, sort=current_sort, category=current_category) }}">Previous</a>
+                            href="{{ url_for('articles.list_articles', page=articles.prev_num, sort=current_sort, category=current_category) }}">
+                            <i class="fas fa-chevron-left me-2"></i>Previous
+                        </a>
                     </li>
                     {% endif %}
 
                     {% for page_num in articles.iter_pages() %}
                     {% if page_num %}
-                    {% if page_num != articles.page %}
-                    <li class="page-item">
+                    <li class="page-item {% if page_num == articles.page %}active{% endif %}">
                         <a class="page-link"
-                            href="{{ url_for('articles.list_articles', page=page_num, sort=current_sort, category=current_category) }}">{{
-                            page_num }}</a>
+                            href="{{ url_for('articles.list_articles', page=page_num, sort=current_sort, category=current_category) }}">
+                            {{ page_num }}
+                        </a>
                     </li>
-                    {% else %}
-                    <li class="page-item active">
-                        <span class="page-link">{{ page_num }}</span>
-                    </li>
-                    {% endif %}
                     {% endif %}
                     {% endfor %}
 
                     {% if articles.has_next %}
                     <li class="page-item">
                         <a class="page-link"
-                            href="{{ url_for('articles.list_articles', page=articles.next_num, sort=current_sort, category=current_category) }}">Next</a>
+                            href="{{ url_for('articles.list_articles', page=articles.next_num, sort=current_sort, category=current_category) }}">
+                            Next<i class="fas fa-chevron-right ms-2"></i>
+                        </a>
                     </li>
                     {% endif %}
                 </ul>
@@ -112,8 +322,8 @@
             {% endif %}
 
             {% else %}
-            <div class="text-center py-5">
-                <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+            <div class="empty-state">
+                <i class="fas fa-file-alt"></i>
                 <h4>No articles found</h4>
                 <p class="text-muted">Check back later for new content.</p>
             </div>
@@ -122,30 +332,30 @@
 
         <!-- Sidebar -->
         <div class="col-lg-3">
-            <div class="card mb-4">
+            <div class="sidebar-card">
                 <div class="card-header">
-                    <h5 class="mb-0">Categories</h5>
+                    <h5 class="mb-0"><i class="fas fa-tags me-2"></i>Categories</h5>
                 </div>
                 <div class="card-body">
                     <a href="{{ url_for('articles.list_articles') }}"
-                        class="category-badge me-2 mb-2 {% if not current_category %}bg-primary text-white{% endif %}">All</a>
+                        class="category-badge {% if not current_category %}bg-primary{% endif %}">All</a>
                     {% for category in categories %}
                     <a href="{{ url_for('articles.category_articles', category_name=category.slug) }}"
-                        class="category-badge me-2 mb-2 {% if current_category == category.name %}bg-primary text-white{% endif %}">
+                        class="category-badge {% if current_category == category.name %}bg-primary{% endif %}">
                         {{ category.name }}
                     </a>
                     {% endfor %}
                 </div>
             </div>
 
-            <div class="card">
+            <div class="sidebar-card">
                 <div class="card-header">
-                    <h5 class="mb-0">Search Articles</h5>
+                    <h5 class="mb-0"><i class="fas fa-search me-2"></i>Search</h5>
                 </div>
                 <div class="card-body">
                     <form action="{{ url_for('search.search') }}" method="GET">
                         <div class="input-group">
-                            <input type="text" class="form-control" name="q" placeholder="Search...">
+                            <input type="text" class="form-control" name="q" placeholder="Search articles...">
                             <button class="btn btn-primary" type="submit">
                                 <i class="fas fa-search"></i>
                             </button>

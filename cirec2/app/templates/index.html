@@ -1,32 +1,279 @@
-<!-- cirec2/app/templates/index.html -->
-
 {% extends "base.html" %}
 
 {% block title %}CIREC - Research Repository{% endblock %}
 
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 5rem 0;
+        margin-bottom: 3rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.3;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-section h1 {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .hero-section .lead {
+        font-size: 1.3rem;
+        font-weight: 300;
+        margin-bottom: 2rem;
+    }
+
+    .hero-section .btn {
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .hero-section .btn-light {
+        background: white;
+        color: #667eea;
+        border: none;
+    }
+
+    .hero-section .btn-light:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .hero-section .btn-outline-light:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-3px);
+    }
+
+    .stats-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .stats-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .stats-card .stats-number {
+        font-size: 3rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+    }
+
+    .stats-card .stats-label {
+        font-size: 1rem;
+        color: #2c3e50;
+        font-weight: 500;
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: #2c3e50;
+        position: relative;
+        display: inline-block;
+    }
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 2px;
+    }
+
+    .featured-section {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 4rem 0;
+        margin: 4rem 0;
+        border-radius: 30px;
+    }
+
+    .article-card {
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        height: 100%;
+        background: white;
+    }
+
+    .article-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .article-card .card-body {
+        padding: 1.5rem;
+    }
+
+    .article-card .card-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+        line-height: 1.4;
+    }
+
+    .article-card .card-text {
+        color: #7f8c8d;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    .article-card .badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+
+    .article-card .btn {
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    .featured-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        z-index: 10;
+        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+    }
+
+    .sidebar-card {
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+    }
+
+    .sidebar-card .card-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.5rem;
+        border: none;
+        font-weight: 700;
+    }
+
+    .category-badge {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 0.5rem 1.2rem;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+        margin: 0.3rem;
+        font-weight: 500;
+    }
+
+    .category-badge:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        color: white;
+        text-decoration: none;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+
+    .empty-state i {
+        font-size: 5rem;
+        color: #e9ecef;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state h4 {
+        color: #7f8c8d;
+        margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .hero-section h1 {
+            font-size: 2.5rem;
+        }
+
+        .hero-section .lead {
+            font-size: 1.1rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <!-- Hero Section -->
 <div class="hero-section">
-    <div class="container">
+    <div class="container hero-content">
         <div class="row align-items-center">
-            <div class="col-lg-6">
-                <h1 class="display-4 fw-bold">Welcome to CIREC</h1>
-                <p class="lead mb-4">Access comprehensive research articles and academic publications in our digital
-                    repository</p>
-                <div class="d-flex flex-wrap gap-3">
-                    <a href="{{ url_for('articles.list_articles') }}" class="btn btn-light btn-lg">Browse Articles</a>
-                    <a href="{{ url_for('search.search') }}" class="btn btn-outline-light btn-lg">Advanced Search</a>
+            <div class="col-lg-6 text-white mb-4 mb-lg-0">
+                <h1 class="display-3 fw-bold">Welcome to CIREC</h1>
+                <p class="lead">Access comprehensive research articles and academic publications powered by AI-driven
+                    semantic search</p>
+                <div class="d-flex flex-wrap gap-3 mt-4">
+                    <a href="{{ url_for('articles.list_articles') }}" class="btn btn-light btn-lg">
+                        <i class="fas fa-search me-2"></i>Explore Articles
+                    </a>
+                    <a href="{{ url_for('search.search') }}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-robot me-2"></i>AI Search
+                    </a>
                 </div>
             </div>
             <div class="col-lg-6">
-                <div class="row">
-                    <div class="col-6 mb-3">
+                <div class="row g-3">
+                    <div class="col-6">
                         <div class="stats-card">
                             <div class="stats-number">{{ stats.total_articles or 0 }}</div>
                             <div class="stats-label">Articles</div>
                         </div>
                     </div>
-                    <div class="col-6 mb-3">
+                    <div class="col-6">
                         <div class="stats-card">
                             <div class="stats-number">{{ stats.total_categories or 0 }}</div>
                             <div class="stats-label">Categories</div>
@@ -42,26 +289,30 @@
 {% if featured_articles %}
 <div class="featured-section">
     <div class="container">
-        <h2 class="text-center mb-5">Featured Articles</h2>
-        <div class="row">
-            {% for article in featured_articles %}
-            <div class="col-lg-4 col-md-6 mb-4">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Featured Articles</h2>
+            <p class="text-muted mt-4">Hand-picked research papers and publications</p>
+        </div>
+        <div class="row g-4">
+            {% for article in featured_articles[:3] %}
+            <div class="col-lg-4 col-md-6">
                 <div class="card article-card">
                     <div class="featured-badge">Featured</div>
                     <div class="card-body">
                         <h5 class="card-title">{{ article.title }}</h5>
-                        <p class="card-text">{{ article.description[:150] }}...</p>
-                        <div class="article-meta">
+                        <p class="card-text">{{ article.description[:120] }}...</p>
+                        <div class="article-meta mb-3">
                             <div class="d-flex justify-content-between align-items-center">
-                                <small class="text-muted">By {{ article.author }}</small>
+                                <small class="text-muted"><i class="fas fa-user me-1"></i>{{ article.author }}</small>
                                 <span class="badge bg-primary">{{ article.category }}</span>
                             </div>
-                            <small class="text-muted">{{ article.view_count or 0 }} views</small>
+                            <small class="text-muted mt-2 d-block"><i class="fas fa-eye me-1"></i>{{ article.view_count
+                                or 0 }} views</small>
                         </div>
-                    </div>
-                    <div class="card-footer bg-transparent">
                         <a href="{{ url_for('articles.view_article', article_uuid=article.uuid) }}"
-                            class="btn btn-primary btn-sm">Read More</a>
+                            class="btn btn-primary w-100">
+                            <i class="fas fa-arrow-right me-2"></i>Read Article
+                        </a>
                     </div>
                 </div>
             </div>
@@ -75,36 +326,30 @@
 <div class="container my-5">
     <div class="row">
         <div class="col-lg-8">
-            <h3 class="mb-4">Latest Articles</h3>
-            <div class="row">
+            <div class="mb-4">
+                <h3 class="section-title">Latest Articles</h3>
+                <p class="text-muted mt-4">Recently published research and publications</p>
+            </div>
+
+            {% if articles.items %}
+            <div class="row g-4">
                 {% for article in articles.items %}
-                <div class="col-md-6 mb-4">
-                    <div class="card article-card h-100">
+                <div class="col-md-6">
+                    <div class="card article-card">
                         <div class="card-body">
                             <h5 class="card-title">{{ article.title }}</h5>
                             <p class="card-text">{{ article.description[:120] }}...</p>
-                            <div class="article-meta">
+                            <div class="article-meta mb-3">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <small class="text-muted">{{ article.author }}</small>
                                     <span class="badge bg-secondary">{{ article.category }}</span>
                                 </div>
                             </div>
-                        </div>
-                        <div class="card-footer bg-transparent">
                             <a href="{{ url_for('articles.view_article', article_uuid=article.uuid) }}"
-                                class="btn btn-outline-primary btn-sm">Read Article</a>
+                                class="btn btn-outline-primary btn-sm">
+                                Read More <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
                         </div>
-                    </div>
-                </div>
-                {% else %}
-                <div class="col-12">
-                    <div class="text-center py-5">
-                        <i class="fas fa-book fa-3x text-muted mb-3"></i>
-                        <h4>No articles yet</h4>
-                        <p class="text-muted">Check back later for new content!</p>
-                        {% if current_user.is_authenticated and current_user.is_admin %}
-                        <a href="{{ url_for('admin.add_article') }}" class="btn btn-primary">Add First Article</a>
-                        {% endif %}
                     </div>
                 </div>
                 {% endfor %}
@@ -112,8 +357,8 @@
 
             <!-- Pagination -->
             {% if articles.pages > 1 %}
-            <nav aria-label="Articles pagination">
-                <ul class="pagination">
+            <nav aria-label="Articles pagination" class="mt-5">
+                <ul class="pagination justify-content-center">
                     {% if articles.has_prev %}
                     <li class="page-item">
                         <a class="page-link" href="{{ url_for('main.index', page=articles.prev_num) }}">Previous</a>
@@ -122,15 +367,9 @@
 
                     {% for page_num in articles.iter_pages() %}
                     {% if page_num %}
-                    {% if page_num != articles.page %}
-                    <li class="page-item">
+                    <li class="page-item {% if page_num == articles.page %}active{% endif %}">
                         <a class="page-link" href="{{ url_for('main.index', page=page_num) }}">{{ page_num }}</a>
                     </li>
-                    {% else %}
-                    <li class="page-item active">
-                        <span class="page-link">{{ page_num }}</span>
-                    </li>
-                    {% endif %}
                     {% else %}
                     <li class="page-item disabled">
                         <span class="page-link">…</span>
@@ -146,57 +385,57 @@
                 </ul>
             </nav>
             {% endif %}
+
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-book-open"></i>
+                <h4>No articles yet</h4>
+                <p class="text-muted">Check back later for new content!</p>
+                {% if current_user.is_authenticated and current_user.is_admin %}
+                <a href="{{ url_for('admin.add_article') }}" class="btn btn-primary mt-3">
+                    <i class="fas fa-plus me-2"></i>Add First Article
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
         </div>
 
         <!-- Sidebar -->
         <div class="col-lg-4">
-            <div class="card mb-4">
+            <div class="sidebar-card">
                 <div class="card-header">
-                    <h5 class="mb-0">Categories</h5>
+                    <h5 class="mb-0"><i class="fas fa-tags me-2"></i>Categories</h5>
                 </div>
                 <div class="card-body">
                     {% for category in categories %}
                     <a href="{{ url_for('articles.category_articles', category_name=category.slug) }}"
-                        class="category-badge me-2 mb-2">{{ category.name }}</a>
+                        class="category-badge">{{ category.name }}</a>
                     {% endfor %}
                 </div>
             </div>
 
-            <div class="card">
+            <div class="sidebar-card">
                 <div class="card-header">
-                    <h5 class="mb-0">Quick Actions</h5>
+                    <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
                 </div>
                 <div class="card-body">
                     {% if not current_user.is_authenticated %}
-                    <p class="card-text">Sign up to access full articles and download PDFs.</p>
-                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm me-2">Sign Up</a>
-                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-sm">Login</a>
+                    <p class="mb-3">Sign up to access full articles and download PDFs.</p>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary w-100 mb-2">
+                        <i class="fas fa-user-plus me-2"></i>Sign Up Free
+                    </a>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </a>
                     {% else %}
-                    <p class="card-text">Welcome back, {{ current_user.first_name }}!</p>
-                    <a href="{{ url_for('auth.profile') }}" class="btn btn-primary btn-sm">My Profile</a>
+                    <p class="mb-3">Welcome back, <strong>{{ current_user.first_name }}</strong>!</p>
+                    <a href="{{ url_for('auth.profile') }}" class="btn btn-primary w-100">
+                        <i class="fas fa-user me-2"></i>My Profile
+                    </a>
                     {% endif %}
                 </div>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-    // Add fade-in animation to cards
-    document.addEventListener('DOMContentLoaded', function () {
-        const cards = document.querySelectorAll('.card');
-        cards.forEach((card, index) => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(20px)';
-
-            setTimeout(() => {
-                card.style.transition = 'all 0.5s ease';
-                card.style.opacity = '1';
-                card.style.transform = 'translateY(0)';
-            }, index * 100);
-        });
-    });
-</script>
 {% endblock %}
