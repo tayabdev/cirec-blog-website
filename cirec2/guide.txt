@@ -1,0 +1,23 @@
+# macOS
+brew install postgresql
+brew services start postgresql
+
+
+
+# Connect to PostgreSQL
+sudo -u postgres psql
+
+# Or if you're on macOS with Homebrew:
+psql postgres
+
+# Create user and database
+CREATE USER tayab WITH PASSWORD 'tayab123';
+CREATE DATABASE cirec_tayab_blog OWNER tayab;
+GRANT ALL PRIVILEGES ON DATABASE cirec_tayab_blog TO tayab;
+
+# Enable pgvector extension
+\c cirec_tayab_blog
+CREATE EXTENSION IF NOT EXISTS vector;
+
+# Exit PostgreSQL
+\q

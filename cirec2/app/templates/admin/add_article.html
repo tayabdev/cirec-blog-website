@@ -1,0 +1,284 @@
+{% extends "base.html" %}
+
+{% block title %}Add Article - Admin - CIREC{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-3">
+            <!-- Admin Sidebar -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>Admin Menu</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('admin.dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                    <a href="{{ url_for('admin.articles') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-file-alt me-2"></i>Articles
+                    </a>
+                    <a href="{{ url_for('admin.add_article') }}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-plus me-2"></i>Add Article
+                    </a>
+                    <a href="{{ url_for('admin.categories') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-tags me-2"></i>Categories
+                    </a>
+                    <a href="{{ url_for('admin.users') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-users me-2"></i>Users
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Add New Article</h2>
+                <a href="{{ url_for('admin.articles') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Articles
+                </a>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <!-- Article Details -->
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">Article Title <span
+                                            class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="title" name="title" required
+                                        placeholder="Enter article title">
+                                    <div class="invalid-feedback">Please provide a valid title.</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Description <span
+                                            class="text-danger">*</span></label>
+                                    <textarea class="form-control" id="description" name="description" rows="4" required
+                                        placeholder="Enter article description or abstract"></textarea>
+                                    <div class="invalid-feedback">Please provide a description.</div>
+                                    <div class="form-text">This will be shown as a preview to users.</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="author" class="form-label">Author <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="author" name="author" required
+                                            placeholder="Author name">
+                                        <div class="invalid-feedback">Please provide an author name.</div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="category" class="form-label">Category <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-select" id="category" name="category" required>
+                                            <option value="">Select a category</option>
+                                            {% for category in categories %}
+                                            <option value="{{ category.name }}">{{ category.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <div class="invalid-feedback">Please select a category.</div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="tags" class="form-label">Tags</label>
+                                    <input type="text" class="form-control" id="tags" name="tags"
+                                        placeholder="Enter tags separated by commas (e.g., research, science, technology)">
+                                    <div class="form-text">Tags help users find your article more easily.</div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <!-- Publishing Options -->
+                                <div class="card bg-light">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">Publishing Options</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-check mb-3">
+                                            <input class="form-check-input" type="checkbox" id="is_published"
+                                                name="is_published">
+                                            <label class="form-check-label" for="is_published">
+                                                <strong>Publish immediately</strong>
+                                                <div class="form-text">Make this article visible to users</div>
+                                            </label>
+                                        </div>
+
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="is_featured"
+                                                name="is_featured">
+                                            <label class="form-check-label" for="is_featured">
+                                                <strong>Feature this article</strong>
+                                                <div class="form-text">Show in featured section</div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- AI Processing Info -->
+                                <div class="card bg-info bg-opacity-10 mt-3">
+                                    <div class="card-body">
+                                        <h6 class="text-info">
+                                            <i class="fas fa-robot me-2"></i>AI Processing
+                                        </h6>
+                                        <small class="text-muted">
+                                            When you upload a PDF, our AI will:
+                                            <ul class="mt-2 mb-0">
+                                                <li>Extract text content</li>
+                                                <li>Generate embeddings for semantic search</li>
+                                                <li>Create article preview</li>
+                                            </ul>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PDF Upload -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="card border-primary">
+                                    <div class="card-header bg-primary text-white">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-file-pdf me-2"></i>PDF Upload
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="pdf_file" class="form-label">
+                                                Select PDF File <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="file" class="form-control" id="pdf_file" name="pdf_file"
+                                                accept=".pdf" required>
+                                            <div class="invalid-feedback">Please select a PDF file.</div>
+                                            <div class="form-text">
+                                                <i class="fas fa-info-circle me-1"></i>
+                                                Maximum file size: 50MB. Only PDF files are allowed.
+                                            </div>
+                                        </div>
+
+                                        <!-- File Preview Area -->
+                                        <div id="file-preview" class="d-none">
+                                            <div class="alert alert-info">
+                                                <i class="fas fa-file-pdf me-2"></i>
+                                                <strong>Selected file:</strong> <span id="file-name"></span>
+                                                <br>
+                                                <small>Size: <span id="file-size"></span></small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a href="{{ url_for('admin.articles') }}" class="btn btn-secondary">Cancel</a>
+                                    <button type="submit" class="btn btn-primary" id="submit-btn">
+                                        <i class="fas fa-save me-1"></i>Add Article
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // File upload preview
+        const fileInput = document.getElementById('pdf_file');
+        const filePreview = document.getElementById('file-preview');
+        const fileName = document.getElementById('file-name');
+        const fileSize = document.getElementById('file-size');
+
+        fileInput.addEventListener('change', function () {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                filePreview.classList.remove('d-none');
+            } else {
+                filePreview.classList.add('d-none');
+            }
+        });
+
+        // Form validation
+        const form = document.querySelector('.needs-validation');
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            } else {
+                // Show loading state
+                const submitBtn = document.getElementById('submit-btn');
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+                submitBtn.disabled = true;
+            }
+            form.classList.add('was-validated');
+        });
+
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Drag and drop functionality
+        const fileCard = document.querySelector('.card.border-primary');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            fileCard.addEventListener(eventName, preventDefaults, false);
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            fileCard.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            fileCard.addEventListener(eventName, unhighlight, false);
+        });
+
+        fileCard.addEventListener('drop', handleDrop, false);
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        function highlight() {
+            fileCard.classList.add('border-success');
+        }
+
+        function unhighlight() {
+            fileCard.classList.remove('border-success');
+        }
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+
+            if (files.length > 0 && files[0].type === 'application/pdf') {
+                fileInput.files = files;
+                // Trigger change event
+                const event = new Event('change', { bubbles: true });
+                fileInput.dispatchEvent(event);
+            }
+        }
+    });
+</script>
+{% endblock %}

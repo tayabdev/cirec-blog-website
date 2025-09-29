@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Search Results - CIREC{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-3">
+            <!-- Search Filters -->
+            <div class="search-filters">
+                <h5>Search Filters</h5>
+                <form method="GET">
+                    <input type="hidden" name="q" value="{{ query }}">
+
+                    <div class="mb-3">
+                        <label class="form-label">Search Type</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="type" value="hybrid" {% if
+                                search_type=='hybrid' or not search_type %}checked{% endif %}>
+                            <label class="form-check-label">Hybrid Search</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="type" value="text" {% if
+                                search_type=='text' %}checked{% endif %}>
+                            <label class="form-check-label">Text Search</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="type" value="semantic" {% if
+                                search_type=='semantic' %}checked{% endif %}>
+                            <label class="form-check-label">Semantic Search</label>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" name="category">
+                            <option value="">All Categories</option>
+                            {% for category in categories %}
+                            <option value="{{ category.name }}" {% if current_category==category.name %}selected{% endif
+                                %}>
+                                {{ category.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-sm">Apply Filters</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            {% if query %}
+            <div class="mb-4">
+                <h3>Search Results for "{{ query }}"</h3>
+                {% if articles and articles.total > 0 %}
+                <p class="text-muted">Found {{ articles.total }} result{{ 's' if articles.total != 1 else '' }}</p>
+                {% else %}
+                <p class="text-muted">No results found</p>
+                {% endif %}
+            </div>
+
+            {% if articles and articles.items %}
+            <!-- Search Results -->
+            {% for article in articles.items %}
+            <div class="search-result-item">
+                <a href="{{ url_for('articles.view_article', article_uuid=article.uuid) }}" class="search-result-title">
+                    {{ article.title }}
+                </a>
+                <p class="search-result-snippet">{{ article.description }}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">By {{ article.author }} • {{ article.category }}</small>
+                        <small class="text-muted">• {{ article.view_count or 0 }} views</small>
+                    </div>
+                    {% if article.tags %}
+                    <div>
+                        {% for tag in article.tag_list[:3] %}
+                        <span class="badge bg-light text-dark">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+
+            <!-- Pagination -->
+            {% if articles.pages > 1 %}
+            <nav class="mt-4">
+                <ul class="pagination">
+                    {% if articles.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="{{ url_for('search.search', q=query, type=search_type, category=current_category, page=articles.prev_num) }}">Previous</a>
+                    </li>
+                    {% endif %}
+
+                    {% for page_num in articles.iter_pages() %}
+                    {% if page_num %}
+                    {% if page_num != articles.page %}
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="{{ url_for('search.search', q=query, type=search_type, category=current_category, page=page_num) }}">{{
+                            page_num }}</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_num }}</span>
+                    </li>
+                    {% endif %}
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if articles.has_next %}
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="{{ url_for('search.search', q=query, type=search_type, category=current_category, page=articles.next_num) }}">Next</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h4>No results found</h4>
+                <p class="text-muted">Try adjusting your search terms or filters</p>
+            </div>
+            {% endif %}
+
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h4>Start Your Search</h4>
+                <p class="text-muted">Enter keywords to find relevant articles</p>
+                <form method="GET" class="d-flex justify-content-center">
+                    <div class="input-group" style="max-width: 500px;">
+                        <input type="text" class="form-control" name="q" placeholder="Search articles...">
+                        <button class="btn btn-primary" type="submit">Search</button>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

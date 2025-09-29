@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}CIREC - Research Repository{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold">Welcome to CIREC</h1>
+                <p class="lead mb-4">Access comprehensive research articles and academic publications in our digital
+                    repository</p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{{ url_for('articles.list_articles') }}" class="btn btn-light btn-lg">Browse Articles</a>
+                    <a href="{{ url_for('search.search') }}" class="btn btn-outline-light btn-lg">Advanced Search</a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <div class="stats-card">
+                            <div class="stats-number">{{ stats.total_articles or 0 }}</div>
+                            <div class="stats-label">Articles</div>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="stats-card">
+                            <div class="stats-number">{{ stats.total_categories or 0 }}</div>
+                            <div class="stats-label">Categories</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Articles -->
+{% if featured_articles %}
+<div class="featured-section">
+    <div class="container">
+        <h2 class="text-center mb-5">Featured Articles</h2>
+        <div class="row">
+            {% for article in featured_articles %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card article-card">
+                    <div class="featured-badge">Featured</div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ article.title }}</h5>
+                        <p class="card-text">{{ article.description[:150] }}...</p>
+                        <div class="article-meta">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">By {{ article.author }}</small>
+                                <span class="badge bg-primary">{{ article.category }}</span>
+                            </div>
+                            <small class="text-muted">{{ article.view_count or 0 }} views</small>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="{{ url_for('articles.view_article', article_uuid=article.uuid) }}"
+                            class="btn btn-primary btn-sm">Read More</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Latest Articles -->
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <h3 class="mb-4">Latest Articles</h3>
+            <div class="row">
+                {% for article in articles.items %}
+                <div class="col-md-6 mb-4">
+                    <div class="card article-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ article.title }}</h5>
+                            <p class="card-text">{{ article.description[:120] }}...</p>
+                            <div class="article-meta">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">{{ article.author }}</small>
+                                    <span class="badge bg-secondary">{{ article.category }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <a href="{{ url_for('articles.view_article', article_uuid=article.uuid) }}"
+                                class="btn btn-outline-primary btn-sm">Read Article</a>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i class="fas fa-book fa-3x text-muted mb-3"></i>
+                        <h4>No articles yet</h4>
+                        <p class="text-muted">Check back later for new content!</p>
+                        {% if current_user.is_authenticated and current_user.is_admin %}
+                        <a href="{{ url_for('admin.add_article') }}" class="btn btn-primary">Add First Article</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if articles.pages > 1 %}
+            <nav aria-label="Articles pagination">
+                <ul class="pagination">
+                    {% if articles.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('main.index', page=articles.prev_num) }}">Previous</a>
+                    </li>
+                    {% endif %}
+
+                    {% for page_num in articles.iter_pages() %}
+                    {% if page_num %}
+                    {% if page_num != articles.page %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('main.index', page=page_num) }}">{{ page_num }}</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_num }}</span>
+                    </li>
+                    {% endif %}
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">…</span>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if articles.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('main.index', page=articles.next_num) }}">Next</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Categories</h5>
+                </div>
+                <div class="card-body">
+                    {% for category in categories %}
+                    <a href="{{ url_for('articles.category_articles', category_name=category.slug) }}"
+                        class="category-badge me-2 mb-2">{{ category.name }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    {% if not current_user.is_authenticated %}
+                    <p class="card-text">Sign up to access full articles and download PDFs.</p>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm me-2">Sign Up</a>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-sm">Login</a>
+                    {% else %}
+                    <p class="card-text">Welcome back, {{ current_user.first_name }}!</p>
+                    <a href="{{ url_for('auth.profile') }}" class="btn btn-primary btn-sm">My Profile</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add fade-in animation to cards
+    document.addEventListener('DOMContentLoaded', function () {
+        const cards = document.querySelectorAll('.card');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+
+            setTimeout(() => {
+                card.style.transition = 'all 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+    });
+</script>
+{% endblock %}
