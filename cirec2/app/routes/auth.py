@@ -1,211 +1,211 @@
 # Option 1: Auto-upgrade new users to premium
 # Update app/routes/auth.py registration:
 
-# from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
-# from flask_login import login_user, logout_user, login_required, current_user
-# from werkzeug.urls import url_parse
-# from app import db
-# from app.models import User
-# from app.utils.validators import validate_email, validate_password
-# import re
-# from datetime import datetime
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
+from flask_login import login_user, logout_user, login_required, current_user
+from werkzeug.urls import url_parse
+from app import db
+from app.models import User
+from app.utils.validators import validate_email, validate_password
+import re
+from datetime import datetime
 
-# auth_bp = Blueprint('auth', __name__)
+auth_bp = Blueprint('auth', __name__)
 
-# @auth_bp.route('/login', methods=['GET', 'POST'])
-# def login():
-#     if current_user.is_authenticated:
-#         return redirect(url_for('main.index'))
+@auth_bp.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
     
-#     if request.method == 'POST':
-#         email = request.form.get('email', '').strip().lower()
-#         password = request.form.get('password', '')
-#         remember_me = bool(request.form.get('remember_me'))
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip().lower()
+        password = request.form.get('password', '')
+        remember_me = bool(request.form.get('remember_me'))
         
-#         # Validation
-#         if not email or not password:
-#             flash('Please fill in all fields.', 'error')
-#             return render_template('auth/login.html')
+        # Validation
+        if not email or not password:
+            flash('Please fill in all fields.', 'error')
+            return render_template('auth/login.html')
         
-#         if not validate_email(email):
-#             flash('Please enter a valid email address.', 'error')
-#             return render_template('auth/login.html')
+        if not validate_email(email):
+            flash('Please enter a valid email address.', 'error')
+            return render_template('auth/login.html')
         
-#         # Find user
-#         user = User.query.filter_by(email=email).first()
+        # Find user
+        user = User.query.filter_by(email=email).first()
         
-#         if user and user.check_password(password):
-#             if not user.is_active:
-#                 flash('Your account has been deactivated. Please contact support.', 'error')
-#                 return render_template('auth/login.html')
+        if user and user.check_password(password):
+            if not user.is_active:
+                flash('Your account has been deactivated. Please contact support.', 'error')
+                return render_template('auth/login.html')
             
-#             # Update last login
-#             user.last_login = datetime.utcnow()
-#             db.session.commit()
+            # Update last login
+            user.last_login = datetime.utcnow()
+            db.session.commit()
             
-#             login_user(user, remember=remember_me)
+            login_user(user, remember=remember_me)
             
-#             # Redirect to next page or dashboard
-#             next_page = request.args.get('next')
-#             if not next_page or url_parse(next_page).netloc != '':
-#                 next_page = url_for('main.index')
+            # Redirect to next page or dashboard
+            next_page = request.args.get('next')
+            if not next_page or url_parse(next_page).netloc != '':
+                next_page = url_for('main.index')
             
-#             flash(f'Welcome back, {user.first_name}!', 'success')
-#             return redirect(next_page)
+            flash(f'Welcome back, {user.first_name}!', 'success')
+            return redirect(next_page)
         
-#         else:
-#             flash('Invalid email or password.', 'error')
+        else:
+            flash('Invalid email or password.', 'error')
     
-#     return render_template('auth/login.html')
+    return render_template('auth/login.html')
 
-# @auth_bp.route('/register', methods=['GET', 'POST'])
-# def register():
-#     if current_user.is_authenticated:
-#         return redirect(url_for('main.index'))
+@auth_bp.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
     
-#     if request.method == 'POST':
-#         # Get form data
-#         email = request.form.get('email', '').strip().lower()
-#         password = request.form.get('password', '')
-#         confirm_password = request.form.get('confirm_password', '')
-#         first_name = request.form.get('first_name', '').strip()
-#         last_name = request.form.get('last_name', '').strip()
+    if request.method == 'POST':
+        # Get form data
+        email = request.form.get('email', '').strip().lower()
+        password = request.form.get('password', '')
+        confirm_password = request.form.get('confirm_password', '')
+        first_name = request.form.get('first_name', '').strip()
+        last_name = request.form.get('last_name', '').strip()
         
-#         # Validation
-#         errors = []
+        # Validation
+        errors = []
         
-#         if not all([email, password, confirm_password, first_name, last_name]):
-#             errors.append('Please fill in all fields.')
+        if not all([email, password, confirm_password, first_name, last_name]):
+            errors.append('Please fill in all fields.')
         
-#         if not validate_email(email):
-#             errors.append('Please enter a valid email address.')
+        if not validate_email(email):
+            errors.append('Please enter a valid email address.')
         
-#         if not validate_password(password):
-#             errors.append('Password must be at least 8 characters long and contain letters and numbers.')
+        if not validate_password(password):
+            errors.append('Password must be at least 8 characters long and contain letters and numbers.')
         
-#         if password != confirm_password:
-#             errors.append('Passwords do not match.')
+        if password != confirm_password:
+            errors.append('Passwords do not match.')
         
-#         if len(first_name) < 2 or len(last_name) < 2:
-#             errors.append('First name and last name must be at least 2 characters long.')
+        if len(first_name) < 2 or len(last_name) < 2:
+            errors.append('First name and last name must be at least 2 characters long.')
         
-#         # Check if email already exists
-#         if User.query.filter_by(email=email).first():
-#             errors.append('An account with this email already exists.')
+        # Check if email already exists
+        if User.query.filter_by(email=email).first():
+            errors.append('An account with this email already exists.')
         
-#         if errors:
-#             for error in errors:
-#                 flash(error, 'error')
-#             return render_template('auth/register.html')
+        if errors:
+            for error in errors:
+                flash(error, 'error')
+            return render_template('auth/register.html')
         
-#         # Create new user
-#         try:
-#             user = User(
-#                 email=email,
-#                 first_name=first_name,
-#                 last_name=last_name,
-#                 is_verified=True,  # Auto-verify for now
-#                 subscription_type='premium'  # Give new users premium access
-#             )
-#             user.set_password(password)
+        # Create new user
+        try:
+            user = User(
+                email=email,
+                first_name=first_name,
+                last_name=last_name,
+                is_verified=True,  # Auto-verify for now
+                subscription_type='premium'  # Give new users premium access
+            )
+            user.set_password(password)
             
-#             db.session.add(user)
-#             db.session.commit()
+            db.session.add(user)
+            db.session.commit()
             
-#             flash('Registration successful! You can now log in.', 'success')
-#             return redirect(url_for('auth.login'))
+            flash('Registration successful! You can now log in.', 'success')
+            return redirect(url_for('auth.login'))
         
-#         except Exception as e:
-#             db.session.rollback()
-#             flash('An error occurred during registration. Please try again.', 'error')
+        except Exception as e:
+            db.session.rollback()
+            flash('An error occurred during registration. Please try again.', 'error')
     
-#     return render_template('auth/register.html')
+    return render_template('auth/register.html')
 
-# @auth_bp.route('/logout')
-# @login_required
-# def logout():
-#     logout_user()
-#     flash('You have been logged out successfully.', 'info')
-#     return redirect(url_for('main.index'))
+@auth_bp.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out successfully.', 'info')
+    return redirect(url_for('main.index'))
 
-# @auth_bp.route('/profile')
-# @login_required
-# def profile():
-#     return render_template('auth/profile.html')
+@auth_bp.route('/profile')
+@login_required
+def profile():
+    return render_template('auth/profile.html')
 
-# @auth_bp.route('/profile/update', methods=['POST'])
-# @login_required
-# def update_profile():
-#     first_name = request.form.get('first_name', '').strip()
-#     last_name = request.form.get('last_name', '').strip()
+@auth_bp.route('/profile/update', methods=['POST'])
+@login_required
+def update_profile():
+    first_name = request.form.get('first_name', '').strip()
+    last_name = request.form.get('last_name', '').strip()
     
-#     if not first_name or not last_name:
-#         flash('First name and last name are required.', 'error')
-#         return redirect(url_for('auth.profile'))
+    if not first_name or not last_name:
+        flash('First name and last name are required.', 'error')
+        return redirect(url_for('auth.profile'))
     
-#     try:
-#         current_user.first_name = first_name
-#         current_user.last_name = last_name
-#         current_user.updated_at = datetime.utcnow()
-#         db.session.commit()
+    try:
+        current_user.first_name = first_name
+        current_user.last_name = last_name
+        current_user.updated_at = datetime.utcnow()
+        db.session.commit()
         
-#         flash('Profile updated successfully!', 'success')
-#     except Exception as e:
-#         db.session.rollback()
-#         flash('An error occurred while updating your profile.', 'error')
+        flash('Profile updated successfully!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('An error occurred while updating your profile.', 'error')
     
-#     return redirect(url_for('auth.profile'))
+    return redirect(url_for('auth.profile'))
 
-# @auth_bp.route('/change-password', methods=['POST'])
-# @login_required
-# def change_password():
-#     current_password = request.form.get('current_password', '')
-#     new_password = request.form.get('new_password', '')
-#     confirm_password = request.form.get('confirm_password', '')
+@auth_bp.route('/change-password', methods=['POST'])
+@login_required
+def change_password():
+    current_password = request.form.get('current_password', '')
+    new_password = request.form.get('new_password', '')
+    confirm_password = request.form.get('confirm_password', '')
     
-#     # Validation
-#     if not all([current_password, new_password, confirm_password]):
-#         flash('Please fill in all password fields.', 'error')
-#         return redirect(url_for('auth.profile'))
+    # Validation
+    if not all([current_password, new_password, confirm_password]):
+        flash('Please fill in all password fields.', 'error')
+        return redirect(url_for('auth.profile'))
     
-#     if not current_user.check_password(current_password):
-#         flash('Current password is incorrect.', 'error')
-#         return redirect(url_for('auth.profile'))
+    if not current_user.check_password(current_password):
+        flash('Current password is incorrect.', 'error')
+        return redirect(url_for('auth.profile'))
     
-#     if not validate_password(new_password):
-#         flash('New password must be at least 8 characters long and contain letters and numbers.', 'error')
-#         return redirect(url_for('auth.profile'))
+    if not validate_password(new_password):
+        flash('New password must be at least 8 characters long and contain letters and numbers.', 'error')
+        return redirect(url_for('auth.profile'))
     
-#     if new_password != confirm_password:
-#         flash('New passwords do not match.', 'error')
-#         return redirect(url_for('auth.profile'))
+    if new_password != confirm_password:
+        flash('New passwords do not match.', 'error')
+        return redirect(url_for('auth.profile'))
     
-#     try:
-#         current_user.set_password(new_password)
-#         current_user.updated_at = datetime.utcnow()
-#         db.session.commit()
+    try:
+        current_user.set_password(new_password)
+        current_user.updated_at = datetime.utcnow()
+        db.session.commit()
         
-#         flash('Password changed successfully!', 'success')
-#     except Exception as e:
-#         db.session.rollback()
-#         flash('An error occurred while changing your password.', 'error')
+        flash('Password changed successfully!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('An error occurred while changing your password.', 'error')
     
-#     return redirect(url_for('auth.profile'))
+    return redirect(url_for('auth.profile'))
 
-# @auth_bp.route('/api/check-email', methods=['POST'])
-# def api_check_email():
-#     """API endpoint to check if email is available"""
-#     email = request.json.get('email', '').strip().lower()
+@auth_bp.route('/api/check-email', methods=['POST'])
+def api_check_email():
+    """API endpoint to check if email is available"""
+    email = request.json.get('email', '').strip().lower()
     
-#     if not validate_email(email):
-#         return jsonify({'available': False, 'message': 'Invalid email format'})
+    if not validate_email(email):
+        return jsonify({'available': False, 'message': 'Invalid email format'})
     
-#     user_exists = User.query.filter_by(email=email).first() is not None
+    user_exists = User.query.filter_by(email=email).first() is not None
     
-#     return jsonify({
-#         'available': not user_exists,
-#         'message': 'Email already registered' if user_exists else 'Email available'
-#     })
+    return jsonify({
+        'available': not user_exists,
+        'message': 'Email already registered' if user_exists else 'Email available'
+    })
 
 
 
